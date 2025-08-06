@@ -32,15 +32,12 @@ public partial class MainPageViewModel : BaseViewModel
     {
         try
         {
-            Stream audioStream = await FileSystem.OpenAppPackageFileAsync("Sounds/mySound.wav");
+            Stream audioStream = await FileSystem.OpenAppPackageFileAsync("Sounds/lizard.mp3");
             audioPlayer = audioManager.CreatePlayer(audioStream);
         }
         catch (Exception ex)
         {
-            if (Application.Current?.MainPage != null)
-            {
-                await Application.Current.MainPage.DisplayAlert("Audio Error", ex.Message, "OK");
-            }
+            System.Diagnostics.Debug.WriteLine($"Audio initialization failed: {ex.Message}");
         }
     }
 
