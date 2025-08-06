@@ -37,7 +37,8 @@ LizardButton is a minimal [.NET MAUI](https://learn.microsoft.com/dotnet/maui/wh
 │   ├── Images/                  – image assets
 │   ├── Sounds/                  – sound assets
 │   └── Styles/                  – styling resources
-└── README.md
+├── AGENTS.md                    – information for AI agents
+└── README.md                    – this file
 ```
 
 ## Contributing
