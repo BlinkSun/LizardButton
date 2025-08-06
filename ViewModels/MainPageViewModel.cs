@@ -10,7 +10,8 @@ public partial class MainPageViewModel : BaseViewModel
     private readonly Func<Task> showAnimatedImage;
     private readonly IAudioManager audioManager;
     private readonly Task initializationTask;
-    private IAudioPlayer? audioPlayer;
+    private readonly List<IAudioPlayer> activePlayers = new();
+    private byte[]? audioData;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainPageViewModel"/> class.
@@ -23,18 +24,20 @@ public partial class MainPageViewModel : BaseViewModel
         this.showAnimatedImage = showAnimatedImage;
         audioManager = AudioManager.Current;
 
-        initializationTask = InitializePlayerAsync();
+        initializationTask = InitializeAudioAsync();
     }
 
     /// <summary>
-    /// Initializes the audio player.
+    /// Loads the audio data into memory.
     /// </summary>
-    private async Task InitializePlayerAsync()
+    private async Task InitializeAudioAsync()
     {
         try
         {
-            Stream audioStream = await FileSystem.OpenAppPackageFileAsync("lizard.mp3");
-            audioPlayer = audioManager.CreatePlayer(audioStream);
+            using Stream stream = await FileSystem.OpenAppPackageFileAsync("lizard.mp3");
+            using MemoryStream memoryStream = new();
+            await stream.CopyToAsync(memoryStream);
+            audioData = memoryStream.ToArray();
         }
         catch (Exception ex)
         {
@@ -51,11 +54,19 @@ public partial class MainPageViewModel : BaseViewModel
         {
             await initializationTask;
 
-            if (audioPlayer != null)
+            if (audioData != null)
             {
-                audioPlayer.Stop();
-                audioPlayer.Play();
+                MemoryStream stream = new(audioData);
+                IAudioPlayer player = audioManager.CreatePlayer(stream);
+                activePlayers.Add(player);
+                player.PlaybackEnded += (s, e) =>
+                {
+                    player.Dispose();
+                    activePlayers.Remove(player);
+                };
+                player.Play();
             }
+
             await showAnimatedImage.Invoke();
         }
         catch (Exception ex)
