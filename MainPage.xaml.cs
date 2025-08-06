@@ -39,7 +39,7 @@ public partial class MainPage : ContentPage
 
             Image animatedImage = new()
             {
-                Source = "myImage.png",
+                Source = "lizard.png",
                 WidthRequest = imageSize,
                 HeightRequest = imageSize,
                 Opacity = 1.0,
