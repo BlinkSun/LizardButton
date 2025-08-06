@@ -29,6 +29,7 @@
     <Color x:Key="Gray950">#141414</Color>
 
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDark}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
     <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
     <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
@@ -42,4 +43,13 @@
     <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
     <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
+
+    <LinearGradientBrush x:Key="MainButtonGradientLight" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource Primary}" Offset="0" />
+        <GradientStop Color="{StaticResource Tertiary}" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="MainButtonGradientDark" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="{StaticResource PrimaryDark}" Offset="0" />
+        <GradientStop Color="{StaticResource Primary}" Offset="1" />
+    </LinearGradientBrush>
 </ResourceDictionary>

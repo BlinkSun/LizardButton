@@ -23,19 +23,14 @@
                 WidthRequest="140"
                 HorizontalOptions="Center"
                 VerticalOptions="Center"
-                Stroke="#4B0082"
-                StrokeThickness="4">
+                Stroke="{AppThemeBinding Light={StaticResource PrimaryBrush}, Dark={StaticResource PrimaryDarkBrush}}"
+                StrokeThickness="4"
+                Background="{AppThemeBinding Light={StaticResource MainButtonGradientLight}, Dark={StaticResource MainButtonGradientDark}}">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="70" />
             </Border.StrokeShape>
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="#BB86FC" Offset="0" />
-                    <GradientStop Color="#3700B3" Offset="1" />
-                </LinearGradientBrush>
-            </Border.Background>
             <Border.Shadow>
-                <Shadow Brush="Black"
+                <Shadow Brush="{AppThemeBinding Light={StaticResource BlackBrush}, Dark={StaticResource WhiteBrush}}"
                         Opacity="0.5"
                         Radius="15"
                         Offset="0,10" />
@@ -65,3 +60,4 @@
         </Border>
     </Grid>
 </ContentPage>
+
