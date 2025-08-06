@@ -59,11 +59,15 @@ public partial class MainPageViewModel : BaseViewModel
                 MemoryStream stream = new(audioData);
                 IAudioPlayer player = audioManager.CreatePlayer(stream);
                 activePlayers.Add(player);
-                player.PlaybackEnded += (s, e) =>
+
+                void OnPlaybackEnded(object? s, EventArgs e)
                 {
+                    player.PlaybackEnded -= OnPlaybackEnded;
                     player.Dispose();
                     activePlayers.Remove(player);
-                };
+                }
+
+                player.PlaybackEnded += OnPlaybackEnded;
                 player.Play();
             }
 
