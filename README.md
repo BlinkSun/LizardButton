@@ -7,6 +7,7 @@ LizardButton is a minimal [.NET MAUI](https://learn.microsoft.com/dotnet/maui/wh
 - Single page user interface without a shell or navigation framework.
 - MVVM architecture with a `MainPageViewModel` that triggers audio playback and image animation.
 - Visual 3D lizard button styled with gradient, border, and shadow.
+- Automatic light and dark mode styling that adapts to the system theme.
 - Audio handled through [`Plugin.Maui.Audio`](https://github.com/jfversluis/Plugin.Maui.Audio).
 - Sound effect packaged as a MAUI asset for consistent playback.
 - Image and sound assets stored under `Resources/Images` and `Resources/Sounds`.
