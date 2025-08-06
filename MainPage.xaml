@@ -2,30 +2,32 @@
 <ContentPage x:Class="LizardButton.MainPage"
              xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:admob="clr-namespace:Plugin.AdMob;assembly=Plugin.AdMob"
              xmlns:viewModel="clr-namespace:LizardButton.ViewModels"
              x:DataType="viewModel:MainPageViewModel">
     <Grid x:Name="RootGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Label Grid.Row="0"
-               Text="{Binding CountText}"
-               HorizontalOptions="Center"
-               VerticalOptions="Center"
                Margin="0,20,0,10"
-               FontSize="18" />
+               FontSize="18"
+               HorizontalOptions="Center"
+               Text="{Binding CountText}"
+               VerticalOptions="Center" />
         <AbsoluteLayout x:Name="AnimationArea"
                         Grid.Row="1"
                         BackgroundColor="Transparent" />
         <Border Grid.Row="1"
+                Background="{AppThemeBinding Light={StaticResource MainButtonGradientLight}, Dark={StaticResource MainButtonGradientDark}}"
                 HeightRequest="140"
-                WidthRequest="140"
                 HorizontalOptions="Center"
-                VerticalOptions="Center"
                 Stroke="{AppThemeBinding Light={StaticResource PrimaryBrush}, Dark={StaticResource PrimaryDarkBrush}}"
                 StrokeThickness="4"
-                Background="{AppThemeBinding Light={StaticResource MainButtonGradientLight}, Dark={StaticResource MainButtonGradientDark}}">
+                VerticalOptions="Center"
+                WidthRequest="140">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="70" />
             </Border.StrokeShape>
@@ -35,11 +37,11 @@
                         Radius="15"
                         Offset="0,10" />
             </Border.Shadow>
-            <ImageButton BackgroundColor="Transparent"
+            <ImageButton Padding="20"
+                         Aspect="AspectFill"
+                         BackgroundColor="Transparent"
                          Clicked="OnCentralButtonClicked"
-                         Padding="20"
-                         Source="lizard.png"
-                         Aspect="AspectFit">
+                         Source="lizard.png">
                 <VisualStateManager.VisualStateGroups>
                     <VisualStateGroupList>
                         <VisualStateGroup x:Name="CommonStates">
@@ -58,6 +60,11 @@
                 </VisualStateManager.VisualStateGroups>
             </ImageButton>
         </Border>
+        <admob:BannerAd Grid.Row="2"
+                        AdSize="Banner"
+                        HorizontalOptions="Fill"
+                        AdUnitId="ca-app-pub-3940256099942544/6300978111"
+                        IsVisible="{OnPlatform Android=True, Default=False}" />
     </Grid>
 </ContentPage>
 
