@@ -1,4 +1,5 @@
-﻿using LizardButton.ViewModels;
+using LizardButton.ViewModels;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Devices;
 
 namespace LizardButton;
@@ -24,9 +25,16 @@ public partial class MainPage : ContentPage
     /// <returns>Une tâche asynchrone.</returns>
     public async Task ShowAnimatedImage()
     {
+        if (!MainThread.IsMainThread)
+        {
+            // Ensure the animation runs on the UI thread for thread safety.
+            await MainThread.InvokeOnMainThreadAsync(ShowAnimatedImage);
+            return;
+        }
+
         try
         {
-            Random random = new();
+            Random random = Random.Shared;
             double imageSize = 64.0;
             double areaWidth = AnimationArea.Width;
             double areaHeight = AnimationArea.Height;
