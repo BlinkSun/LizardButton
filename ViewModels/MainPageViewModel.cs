@@ -1,4 +1,6 @@
 ﻿using Plugin.Maui.Audio;
+using System.Globalization;
+using Microsoft.Maui.Storage;
 
 namespace LizardButton.ViewModels;
 
@@ -10,6 +12,8 @@ public partial class MainPageViewModel : BaseViewModel
     private readonly Func<Task> showAnimatedImage;
     private readonly IAudioManager audioManager;
     private readonly List<IAudioPlayer> activePlayers = [];
+    private readonly string labelFormat;
+    private int tapCount;
     private byte[]? audioData;
 
     /// <summary>
@@ -22,6 +26,15 @@ public partial class MainPageViewModel : BaseViewModel
 
         this.showAnimatedImage = showAnimatedImage;
         audioManager = AudioManager.Current;
+
+        tapCount = Preferences.Default.Get(nameof(tapCount), 0);
+        labelFormat = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
+        {
+            "fr" => "Nombre de lézards : {0}",
+            _ => "Lizard count: {0}",
+        };
+
+        OnPropertyChanged(nameof(CountText));
 
         _ = InitializeAudioAsync();
     }
@@ -51,6 +64,8 @@ public partial class MainPageViewModel : BaseViewModel
     {
         try
         {
+            TapCount++;
+
             if (audioData != null)
             {
                 MemoryStream stream = new(audioData);
@@ -75,6 +90,27 @@ public partial class MainPageViewModel : BaseViewModel
             if (Application.Current?.MainPage != null)
             {
                 await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the localized text displaying the tap count.
+    /// </summary>
+    public string CountText => string.Format(labelFormat, tapCount);
+
+    /// <summary>
+    /// Gets or sets the number of taps performed.
+    /// </summary>
+    public int TapCount
+    {
+        get => tapCount;
+        private set
+        {
+            if (SetProperty(ref tapCount, value))
+            {
+                Preferences.Default.Set(nameof(tapCount), tapCount);
+                OnPropertyChanged(nameof(CountText));
             }
         }
     }
