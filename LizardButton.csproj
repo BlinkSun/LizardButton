@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFrameworks>net8.0-android</TargetFrameworks>
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
@@ -23,20 +23,17 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <ItemGroup>
-        <MauiIcon Include="Resources\Images\lizard.png" Color="#512BD4" />
-        <MauiSplashScreen Include="Resources\Images\lizard.png" Color="#512BD4" BaseSize="300,185" />
-        <MauiImage Include="Resources\Images\*" />
-        <MauiImage Update="Resources\Images\lizard.png" Resize="True" BaseSize="300,185" />
-        <MauiFont Include="Resources\Fonts\*" />
-        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+      <MauiFont Include="Resources\Fonts\*" />
+      <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+      <MauiAsset Include="Resources\Sounds\lizard.mp3" LogicalName="lizard.mp3" />
+      <MauiIcon Include="Resources\Images\appicon.png" Color="#512BD4" />
+      <MauiImage Include="Resources\Images\lizard.png" LogicalName="lizard.png" />
+      <MauiSplashScreen Include="Resources\Images\splash.png" Color="#512BD4" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
         <PackageReference Include="Plugin.Maui.Audio" Version="3.1.1" />
-    </ItemGroup>
-    <ItemGroup>
-        <MauiAsset Include="Resources\Sounds\lizard.mp3" LogicalName="lizard.mp3" />
     </ItemGroup>
 </Project>
