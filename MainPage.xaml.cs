@@ -1,5 +1,6 @@
 using LizardButton.ViewModels;
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Devices;
 
 namespace LizardButton;
 
@@ -34,9 +35,21 @@ public partial class MainPage : ContentPage
         try
         {
             Random random = Random.Shared;
+            double imageSize = 64.0;
             double areaWidth = AnimationArea.Width;
             double areaHeight = AnimationArea.Height;
-            double imageSize = 64.0;
+
+            if (double.IsNaN(areaWidth) || double.IsNaN(areaHeight) || areaWidth <= imageSize || areaHeight <= imageSize)
+            {
+                var displayInfo = DeviceDisplay.MainDisplayInfo;
+                areaWidth = displayInfo.Width / displayInfo.Density;
+                areaHeight = displayInfo.Height / displayInfo.Density;
+            }
+
+            if (double.IsNaN(areaWidth) || double.IsNaN(areaHeight) || areaWidth <= imageSize || areaHeight <= imageSize)
+            {
+                return;
+            }
 
             // Position random
             double startX = random.NextDouble() * (areaWidth - imageSize);
