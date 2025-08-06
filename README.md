@@ -13,6 +13,7 @@ LizardButton is a minimal [.NET MAUI](https://learn.microsoft.com/dotnet/maui/wh
 - Image and sound assets stored under `Resources/Images` and `Resources/Sounds`.
 - Rapid consecutive taps play overlapping sound effects without cutting off previous sounds.
 - Persistent tap counter stored in cross-platform preferences with a localized label.
+- Custom lizard splash screen and app icon.
 
 ## Getting started
 
