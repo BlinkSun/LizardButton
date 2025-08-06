@@ -4,6 +4,8 @@ These instructions apply to all files in this repository. Read this file fully b
 
 ## Development Workflow
 
+# *** Warning: You can't compile or get any of those SDK or workload, don't waste your time trying to do so if you can't.
+
 1. **Install dependencies**
    - Ensure the .NET 8 SDK is installed.
    - If building fails due to missing workloads, run `dotnet workload restore` and retry.
