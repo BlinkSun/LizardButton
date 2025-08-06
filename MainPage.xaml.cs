@@ -48,12 +48,12 @@ public partial class MainPage : ContentPage
             AbsoluteLayout.SetLayoutBounds(animatedImage, new Rect(startX, startY, imageSize, imageSize));
             AnimationArea.Children.Add(animatedImage);
 
-            Task moveTask = animatedImage.TranslateTo(centerX - startX, centerY - startY, 1500, Easing.CubicIn);
+            Task moveTask = animatedImage.TranslateTo(centerX - startX, centerY - startY, 1500, Easing.CubicOut);
             Task fadeTask = animatedImage.FadeTo(0, 1800, Easing.CubicOut);
 
             await Task.WhenAll(moveTask, fadeTask);
 
-            AnimationArea.Children.Remove(animatedImage);
+            AnimationArea.Children.Remove(animatedImage); 
         }
         catch (Exception ex)
         {
