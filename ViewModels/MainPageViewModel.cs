@@ -10,7 +10,7 @@ public partial class MainPageViewModel : BaseViewModel
     private readonly Func<Task> showAnimatedImage;
     private readonly IAudioManager audioManager;
     private readonly Task initializationTask;
-    private readonly List<IAudioPlayer> activePlayers = new();
+    private readonly List<IAudioPlayer> activePlayers = [];
     private byte[]? audioData;
 
     /// <summary>
@@ -52,7 +52,7 @@ public partial class MainPageViewModel : BaseViewModel
     {
         try
         {
-            await initializationTask;
+            //await initializationTask;
 
             if (audioData != null)
             {

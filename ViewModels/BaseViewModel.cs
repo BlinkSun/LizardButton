@@ -8,7 +8,7 @@ namespace LizardButton.ViewModels;
 /// </summary>
 public abstract class BaseViewModel : INotifyPropertyChanged
 {
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     /// <summary>
     /// Notifies listeners of a property value change.
