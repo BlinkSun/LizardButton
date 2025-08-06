@@ -7,7 +7,7 @@ namespace LizardButton.ViewModels;
 /// <summary>
 /// ViewModel for MainPage handling button taps, sound, and image animation.
 /// </summary>
-public partial class MainPageViewModel : BaseViewModel
+public partial class MainPageViewModel : BaseViewModel, IDisposable
 {
     private readonly Func<Task> showAnimatedImage;
     private readonly IAudioManager audioManager;
@@ -15,6 +15,7 @@ public partial class MainPageViewModel : BaseViewModel
     private readonly string labelFormat;
     private int tapCount;
     private byte[]? audioData;
+    private bool disposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainPageViewModel"/> class.
@@ -113,5 +114,33 @@ public partial class MainPageViewModel : BaseViewModel
                 OnPropertyChanged(nameof(CountText));
             }
         }
+    }
+
+    /// <summary>
+    /// Releases resources used by the view model.
+    /// </summary>
+    public void Dispose()
+    {
+        if (disposed)
+        {
+            return;
+        }
+
+        foreach (IAudioPlayer player in activePlayers)
+        {
+            try
+            {
+                player.Stop();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to stop player: {ex.Message}");
+            }
+
+            player.Dispose();
+        }
+
+        activePlayers.Clear();
+        disposed = true;
     }
 }
