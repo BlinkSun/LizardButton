@@ -53,7 +53,7 @@ public partial class MainPage : ContentPage
 
             await Task.WhenAll(moveTask, fadeTask);
 
-            AnimationArea.Children.Remove(animatedImage); 
+            AnimationArea.Children.Remove(animatedImage);
         }
         catch (Exception ex)
         {

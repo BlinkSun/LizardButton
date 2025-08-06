@@ -9,7 +9,6 @@ public partial class MainPageViewModel : BaseViewModel
 {
     private readonly Func<Task> showAnimatedImage;
     private readonly IAudioManager audioManager;
-    private readonly Task initializationTask;
     private readonly List<IAudioPlayer> activePlayers = [];
     private byte[]? audioData;
 
@@ -24,7 +23,7 @@ public partial class MainPageViewModel : BaseViewModel
         this.showAnimatedImage = showAnimatedImage;
         audioManager = AudioManager.Current;
 
-        initializationTask = InitializeAudioAsync();
+        _ = InitializeAudioAsync();
     }
 
     /// <summary>
@@ -52,8 +51,6 @@ public partial class MainPageViewModel : BaseViewModel
     {
         try
         {
-            //await initializationTask;
-
             if (audioData != null)
             {
                 MemoryStream stream = new(audioData);
