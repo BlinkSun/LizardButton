@@ -9,15 +9,34 @@
                         Grid.Row="0"
                         Grid.Column="0"
                         BackgroundColor="Transparent" />
-        <Button BackgroundColor="MediumPurple"
-                Clicked="OnCentralButtonClicked"
-                CornerRadius="60"
-                FontSize="24"
-                HeightRequest="120"
-                HorizontalOptions="Center"
-                Text="TAP ME"
-                TextColor="White"
-                VerticalOptions="Center"
-                WidthRequest="120" />
+        <ImageButton BackgroundColor="MediumPurple"
+                      Clicked="OnCentralButtonClicked"
+                      CornerRadius="60"
+                      HeightRequest="120"
+                      HorizontalOptions="Center"
+                      Source="lizard.png"
+                      VerticalOptions="Center"
+                      WidthRequest="120">
+            <ImageButton.Shadow>
+                <Shadow Brush="Black"
+                        Offset="0,10"
+                        Opacity="0.5"
+                        Radius="10" />
+            </ImageButton.Shadow>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup Name="CommonStates">
+                    <VisualState Name="Normal">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="1" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState Name="Pressed">
+                        <VisualState.Setters>
+                            <Setter Property="Scale" Value="0.9" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+        </ImageButton>
     </Grid>
 </ContentPage>

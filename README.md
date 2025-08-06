@@ -1,6 +1,6 @@
 # LizardButton
 
-LizardButton is a minimal [.NET MAUI](https://learn.microsoft.com/dotnet/maui/what-is-maui) sample. The app displays a single button. Tapping it plays a sound and briefly shows an animated lizard image that fades toward the center of the screen.
+LizardButton is a minimal [.NET MAUI](https://learn.microsoft.com/dotnet/maui/what-is-maui) sample. The app displays a single 3D lizard button. Tapping it plays a sound and briefly shows an animated lizard image that fades toward the center of the screen.
 
 ## Features
 

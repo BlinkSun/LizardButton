@@ -9,6 +9,7 @@ public partial class MainPageViewModel : BaseViewModel
 {
     private readonly Func<Task> showAnimatedImage;
     private readonly IAudioManager audioManager;
+    private readonly Task initializationTask;
     private IAudioPlayer? audioPlayer;
 
     /// <summary>
@@ -22,17 +23,17 @@ public partial class MainPageViewModel : BaseViewModel
         this.showAnimatedImage = showAnimatedImage;
         audioManager = AudioManager.Current;
 
-        InitializePlayerAsync();
+        initializationTask = InitializePlayerAsync();
     }
 
     /// <summary>
     /// Initializes the audio player.
     /// </summary>
-    private async void InitializePlayerAsync()
+    private async Task InitializePlayerAsync()
     {
         try
         {
-            Stream audioStream = await FileSystem.OpenAppPackageFileAsync("Sounds/lizard.mp3");
+            Stream audioStream = await FileSystem.OpenAppPackageFileAsync("lizard.mp3");
             audioPlayer = audioManager.CreatePlayer(audioStream);
         }
         catch (Exception ex)
@@ -48,6 +49,8 @@ public partial class MainPageViewModel : BaseViewModel
     {
         try
         {
+            await initializationTask;
+
             if (audioPlayer != null)
             {
                 audioPlayer.Stop();
