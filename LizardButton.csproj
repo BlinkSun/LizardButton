@@ -59,9 +59,6 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <None Remove="Resources\Sounds\lizard.mp3" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
@@ -71,9 +68,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Resources\Sounds\lizard.mp3">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
+          <MauiAsset Include="Resources\Sounds\lizard.mp3" LogicalName="lizard.mp3" />
+        </ItemGroup>
 
 </Project>
