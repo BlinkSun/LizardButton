@@ -10,32 +10,34 @@
                         Grid.Column="0"
                         BackgroundColor="Transparent" />
         <ImageButton BackgroundColor="MediumPurple"
-                      Clicked="OnCentralButtonClicked"
-                      CornerRadius="60"
-                      HeightRequest="120"
-                      HorizontalOptions="Center"
-                      Source="lizard.png"
-                      VerticalOptions="Center"
-                      WidthRequest="120">
+                     Clicked="OnCentralButtonClicked"
+                     CornerRadius="60"
+                     HeightRequest="120"
+                     HorizontalOptions="Center"
+                     Source="lizard.png"
+                     VerticalOptions="Center"
+                     WidthRequest="120">
             <ImageButton.Shadow>
                 <Shadow Brush="Black"
-                        Offset="0,10"
                         Opacity="0.5"
-                        Radius="10" />
+                        Radius="10"
+                        Offset="0,10" />
             </ImageButton.Shadow>
             <VisualStateManager.VisualStateGroups>
-                <VisualStateGroup Name="CommonStates">
-                    <VisualState Name="Normal">
-                        <VisualState.Setters>
-                            <Setter Property="Scale" Value="1" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState Name="Pressed">
-                        <VisualState.Setters>
-                            <Setter Property="Scale" Value="0.9" />
-                        </VisualState.Setters>
-                    </VisualState>
-                </VisualStateGroup>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="Scale" Value="1" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="Scale" Value="0.9" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
             </VisualStateManager.VisualStateGroups>
         </ImageButton>
     </Grid>
