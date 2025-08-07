@@ -1,5 +1,6 @@
 ﻿using Plugin.Maui.Audio;
 using System.Globalization;
+using System.Numerics;
 using Microsoft.Maui.Storage;
 
 namespace LizardButton.ViewModels;
@@ -13,7 +14,8 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
     private readonly IAudioManager audioManager;
     private readonly List<IAudioPlayer> activePlayers = [];
     private readonly string labelFormat;
-    private int tapCount;
+    private readonly string[] units;
+    private BigInteger tapCount;
     private byte[]? audioData;
     private bool disposed;
 
@@ -28,11 +30,17 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
         this.showAnimatedImage = showAnimatedImage;
         audioManager = AudioManager.Current;
 
-        tapCount = Preferences.Default.Get(nameof(tapCount), 0);
+        tapCount = BigInteger.Parse(Preferences.Default.Get(nameof(tapCount), "0"), CultureInfo.InvariantCulture);
         labelFormat = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
         {
             "fr" => "Nombre de lézards : {0}",
             _ => "Lizard count: {0}",
+        };
+
+        units = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
+        {
+            "fr" => new[] { "", " k", " M", " Md", " Bn", " Tn", " Qa", " Qi", " Sx", " Sp", " Oc", " No", " Dc" },
+            _ => new[] { "", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc" },
         };
 
         OnPropertyChanged(nameof(CountText));
@@ -98,22 +106,55 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
     /// <summary>
     /// Gets the localized text displaying the tap count.
     /// </summary>
-    public string CountText => string.Format(labelFormat, tapCount);
+    public string CountText => string.Format(labelFormat, FormatWithUnits(tapCount));
 
     /// <summary>
     /// Gets or sets the number of taps performed.
     /// </summary>
-    public int TapCount
+    public BigInteger TapCount
     {
         get => tapCount;
         private set
         {
             if (SetProperty(ref tapCount, value))
             {
-                Preferences.Default.Set(nameof(tapCount), tapCount);
+                Preferences.Default.Set(nameof(tapCount), tapCount.ToString(CultureInfo.InvariantCulture));
                 OnPropertyChanged(nameof(CountText));
             }
         }
+    }
+
+    /// <summary>
+    /// Formats large numbers using unit suffixes (e.g., 1K, 1M).
+    /// </summary>
+    /// <param name="number">Number to format.</param>
+    /// <returns>Formatted string with units.</returns>
+    private string FormatWithUnits(BigInteger number)
+    {
+        BigInteger thousand = new(1000);
+        int unitIndex = 0;
+        BigInteger value = number;
+        BigInteger remainder = BigInteger.Zero;
+
+        while (value >= thousand && unitIndex < units.Length - 1)
+        {
+            remainder = value % thousand;
+            value /= thousand;
+            unitIndex++;
+        }
+
+        string result = value.ToString(CultureInfo.CurrentUICulture);
+
+        if (unitIndex > 0 && remainder != 0)
+        {
+            int firstDigit = (int)(remainder / (thousand / 10));
+            if (firstDigit > 0)
+            {
+                result += CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator + firstDigit.ToString(CultureInfo.CurrentUICulture);
+            }
+        }
+
+        return result + units[unitIndex];
     }
 
     /// <summary>
