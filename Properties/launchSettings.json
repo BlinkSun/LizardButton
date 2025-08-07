@@ -1,10 +1,5 @@
 {
   "profiles": {
-    "Pixel 7 - API 34 (Android 14.0 - API 34)": {
-      "commandName": "Mobile",
-      "device": "pixel_7_-_api_34",
-      "devicePlatform": "Android"
-    },
     "Windows Machine": {
       "commandName": "MsixPackage",
       "nativeDebugging": false

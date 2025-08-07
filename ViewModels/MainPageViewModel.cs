@@ -1,7 +1,6 @@
 ﻿using Plugin.Maui.Audio;
 using System.Globalization;
 using System.Numerics;
-using Microsoft.Maui.Storage;
 
 namespace LizardButton.ViewModels;
 
@@ -39,8 +38,8 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
 
         units = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
         {
-            "fr" => new[] { "", " k", " M", " Md", " Bn", " Tn", " Qa", " Qi", " Sx", " Sp", " Oc", " No", " Dc" },
-            _ => new[] { "", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc" },
+            "fr" => ["", " k", " M", " Md", " Bn", " Tn", " Qa", " Qi", " Sx", " Sp", " Oc", " No", " Dc"],
+            _ => ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"],
         };
 
         OnPropertyChanged(nameof(CountText));
@@ -185,5 +184,7 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
 
         activePlayers.Clear();
         disposed = true;
+
+        GC.SuppressFinalize(this);
     }
 }

@@ -62,9 +62,9 @@
         </Border>
         <admob:BannerAd Grid.Row="2"
                         AdSize="Banner"
-                        HorizontalOptions="Fill"
                         AdUnitId="ca-app-pub-3940256099942544/6300978111"
-                        IsVisible="{OnPlatform Android=True, Default=False}" />
+                        HeightRequest="50"
+                        IsVisible="{OnPlatform Android=True, WinUI=False}" />
     </Grid>
 </ContentPage>
 
