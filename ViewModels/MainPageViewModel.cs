@@ -134,23 +134,25 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
         BigInteger thousand = new(1000);
         int unitIndex = 0;
         BigInteger value = number;
-        BigInteger remainder = BigInteger.Zero;
 
         while (value >= thousand && unitIndex < units.Length - 1)
         {
-            remainder = value % thousand;
             value /= thousand;
             unitIndex++;
         }
 
         string result = value.ToString(CultureInfo.CurrentUICulture);
 
-        if (unitIndex > 0 && remainder != 0)
+        if (unitIndex > 0)
         {
-            int firstDigit = (int)(remainder / (thousand / 10));
-            if (firstDigit > 0)
+            BigInteger scale = BigInteger.Pow(thousand, unitIndex);
+            BigInteger remainder = number % scale;
+            BigInteger fraction = remainder * 1000 / scale;
+            string fractionString = ((int)fraction).ToString("D3", CultureInfo.CurrentUICulture).TrimEnd('0');
+
+            if (fractionString.Length > 0)
             {
-                result += CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator + firstDigit.ToString(CultureInfo.CurrentUICulture);
+                result += CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator + fractionString;
             }
         }
 
