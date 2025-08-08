@@ -4,6 +4,9 @@ using Microsoft.Maui.Devices;
 
 namespace LizardButton;
 
+/// <summary>
+/// Represents the application's main page.
+/// </summary>
 public partial class MainPage : ContentPage
 {
     private readonly MainPageViewModel viewModel;
@@ -15,8 +18,16 @@ public partial class MainPage : ContentPage
     {
         InitializeComponent();
 
-        viewModel = new MainPageViewModel(ShowAnimatedImage);
-        BindingContext = viewModel;
+        try
+        {
+            viewModel = new MainPageViewModel(ShowAnimatedImage);
+            BindingContext = viewModel;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to initialize MainPageViewModel: {ex.Message}");
+            throw;
+        }
     }
 
     /// <summary>
@@ -91,6 +102,16 @@ public partial class MainPage : ContentPage
     /// </summary>
     private async void OnCentralButtonClicked(object sender, EventArgs e)
     {
-        await viewModel.TapAsync();
+        try
+        {
+            await viewModel.TapAsync();
+        }
+        catch (Exception ex)
+        {
+            if (Application.Current?.MainPage != null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+            }
+        }
     }
 }

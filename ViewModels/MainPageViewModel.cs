@@ -91,9 +91,9 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
                 }
                 MainThread.BeginInvokeOnMainThread(() => TapWorldCount = value);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // handle UI update error
+                System.Diagnostics.Debug.WriteLine($"Failed to process tap count: {ex.Message}");
             }
         });
 
@@ -134,9 +134,9 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
 
         try
         {
-            HttpRequestMessage request = new(HttpMethod.Post, TokenUrl);
+            using HttpRequestMessage request = new(HttpMethod.Post, TokenUrl);
             request.Headers.Add("X-Client-Secret", ClientCredentials.ClientSecret);
-            HttpResponseMessage response = await httpClient.SendAsync(request);
+            using HttpResponseMessage response = await httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
             TokenResponse? tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>();
             jwt = tokenResponse?.Token ?? string.Empty;
@@ -217,13 +217,17 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
     }
 
     /// <summary>
-    /// Gets the localized text displaying the tap count.
+    /// Gets the localized text displaying the global tap count.
     /// </summary>
     public string CountWorldText => string.Format(labelWorldFormat, FormatWithUnits(tapWorldCount));
+
+    /// <summary>
+    /// Gets the localized text displaying the local tap count.
+    /// </summary>
     public string CountText => string.Format(labelFormat, FormatWithUnits(tapCount));
 
     /// <summary>
-    /// Gets or sets the number of taps performed.
+    /// Gets or sets the global number of taps performed.
     /// </summary>
     public BigInteger TapWorldCount
     {
@@ -236,6 +240,9 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
             }
         }
     }
+    /// <summary>
+    /// Gets or sets the local number of taps performed.
+    /// </summary>
     public BigInteger TapCount
     {
         get => tapCount;
@@ -307,12 +314,35 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
                     System.Diagnostics.Debug.WriteLine($"Failed to stop player: {ex.Message}");
                 }
 
-                player.Dispose();
+                try
+                {
+                    player.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to dispose player: {ex.Message}");
+                }
             }
 
             activePlayers.Clear();
         }
-        _ = hubConnection.DisposeAsync();
+        try
+        {
+            _ = hubConnection.DisposeAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to dispose hub connection: {ex.Message}");
+        }
+
+        try
+        {
+            httpClient.Dispose();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to dispose HttpClient: {ex.Message}");
+        }
         Connectivity.Current.ConnectivityChanged -= OnConnectivityChanged;
         disposed = true;
 
