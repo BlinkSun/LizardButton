@@ -1,4 +1,3 @@
-using System;
 using Plugin.AdMob;
 using Plugin.AdMob.Configuration;
 

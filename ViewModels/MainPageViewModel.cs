@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Maui.Networking;
 using Plugin.Maui.Audio;
 using System.Globalization;
 using System.Net.Http.Json;

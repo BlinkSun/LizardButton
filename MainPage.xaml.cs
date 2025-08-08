@@ -1,6 +1,4 @@
 using LizardButton.ViewModels;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Devices;
 
 namespace LizardButton;
 
@@ -52,7 +50,7 @@ public partial class MainPage : ContentPage
 
             if (double.IsNaN(areaWidth) || double.IsNaN(areaHeight) || areaWidth <= imageSize || areaHeight <= imageSize)
             {
-                var displayInfo = DeviceDisplay.MainDisplayInfo;
+                DisplayInfo displayInfo = DeviceDisplay.MainDisplayInfo;
                 areaWidth = displayInfo.Width / displayInfo.Density;
                 areaHeight = displayInfo.Height / displayInfo.Density;
             }
