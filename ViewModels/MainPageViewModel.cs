@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using Plugin.Maui.Audio;
 using System.Globalization;
-using System.Numerics;
-using System.Net.Http;
 using System.Net.Http.Json;
+using System.Numerics;
 
 namespace LizardButton.ViewModels;
 
@@ -25,11 +24,11 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
     private bool disposed;
 
     private const string BaseUrl =
-#if DEBUG
-        "https://localhost:7296";
-#else
-        "https://<YOUR-AZURE-APP-NAME>.azurewebsites.net";
-#endif
+    //#if DEBUG
+    //        "https://localhost:7296";
+    //#else
+        "https://lizardbutton-ayepcnhcfkashweb.canadaeast-01.azurewebsites.net";
+    //#endif
 
     private const string HubUrl = BaseUrl + "/hubs/tap";
     private const string TokenUrl = BaseUrl + "/token";
@@ -80,9 +79,20 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
             .WithAutomaticReconnect()
             .Build();
 
-        hubConnection.On<long>("ReceiveTapCount", count =>
+        hubConnection.On<string>("ReceiveTapCount", payload =>
         {
-            MainThread.BeginInvokeOnMainThread(() => TapWorldCount = new BigInteger(count));
+            try
+            {
+                if (!BigInteger.TryParse(payload, out BigInteger value))
+                {
+                    value = BigInteger.Zero;
+                }
+                MainThread.BeginInvokeOnMainThread(() => TapWorldCount = value);
+            }
+            catch (Exception)
+            {
+                // handle UI update error
+            }
         });
 
         _ = ConnectToHubAsync();
@@ -110,7 +120,7 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
     /// Retrieves a JWT from the server using the configured client secret.
     /// </summary>
     /// <returns>The JWT as a string.</returns>
-    private async Task<string> GetJwtAsync()
+    private async Task<string?> GetJwtAsync()
     {
         if (!string.IsNullOrEmpty(jwt))
         {
