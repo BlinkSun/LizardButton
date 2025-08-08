@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /blinkey.jks
 /adModKey.txt
+/ClientCredentials.cs
