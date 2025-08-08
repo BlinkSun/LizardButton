@@ -21,12 +21,13 @@ LizardButton is a minimal [.NET MAUI](https://learn.microsoft.com/dotnet/maui/wh
    ```bash
    dotnet workload restore
    ```
-2. Build the project:
+2. Set the client secret used for JWT authentication in `ClientCredentials.cs`.
+3. Build the project:
    ```bash
    dotnet build
    ```
    If required workloads are missing, the build output will show the command needed to install them.
-3. Run the app for a specific platform (example for Android):
+4. Run the app for a specific platform (example for Android):
    ```bash
    dotnet build -t:Run -f net8.0-android
    ```

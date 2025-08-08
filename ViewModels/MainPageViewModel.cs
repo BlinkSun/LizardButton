@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.SignalR.Client;
 using Plugin.Maui.Audio;
 using System.Globalization;
 using System.Numerics;
+using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace LizardButton.ViewModels;
 
@@ -21,14 +23,19 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
     private byte[]? audioData;
     private bool disposed;
 
-    private const string HubUrl =
+    private const string BaseUrl =
 #if DEBUG
-        "https://localhost:7296/hubs/tap";
+        "https://localhost:7296";
 #else
-        "https://<YOUR-AZURE-APP-NAME>.azurewebsites.net/hubs/tap";
+        "https://<YOUR-AZURE-APP-NAME>.azurewebsites.net";
 #endif
 
+    private const string HubUrl = BaseUrl + "/hubs/tap";
+    private const string TokenUrl = BaseUrl + "/token";
+
     private readonly HubConnection hubConnection;
+    private readonly HttpClient httpClient = new();
+    private string? jwt;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainPageViewModel"/> class.
@@ -65,7 +72,10 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
 
         // Set up SignalR connection for global tap count
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(HubUrl)
+            .WithUrl(HubUrl, options =>
+            {
+                options.AccessTokenProvider = GetJwtAsync;
+            })
             .WithAutomaticReconnect()
             .Build();
 
@@ -93,6 +103,35 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
         {
             System.Diagnostics.Debug.WriteLine($"Audio initialization failed: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// Retrieves a JWT from the server using the configured client secret.
+    /// </summary>
+    /// <returns>The JWT as a string.</returns>
+    private async Task<string> GetJwtAsync()
+    {
+        if (!string.IsNullOrEmpty(jwt))
+        {
+            return jwt;
+        }
+
+        try
+        {
+            HttpRequestMessage request = new(HttpMethod.Post, TokenUrl);
+            request.Headers.Add("X-Client-Secret", ClientCredentials.ClientSecret);
+            HttpResponseMessage response = await httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            TokenResponse? tokenResponse = await response.Content.ReadFromJsonAsync<TokenResponse>();
+            jwt = tokenResponse?.Token ?? string.Empty;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to retrieve JWT: {ex.Message}");
+            jwt = string.Empty;
+        }
+
+        return jwt;
     }
 
     /// <summary>
@@ -247,6 +286,7 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
     {
         try
         {
+            await GetJwtAsync();
             await hubConnection.StartAsync();
             await hubConnection.InvokeAsync("GetTapCount");
         }
@@ -255,4 +295,6 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
             System.Diagnostics.Debug.WriteLine($"SignalR connection error: {ex.Message}");
         }
     }
+
+    private sealed record TokenResponse(string Token);
 }
