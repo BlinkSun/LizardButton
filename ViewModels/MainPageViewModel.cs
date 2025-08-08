@@ -15,6 +15,7 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
     private readonly Func<Task> showAnimatedImage;
     private readonly IAudioManager audioManager;
     private readonly List<IAudioPlayer> activePlayers = [];
+    private readonly object activePlayersLock = new();
     private readonly string labelWorldFormat;
     private readonly string labelFormat;
     private readonly string[] units;
@@ -147,12 +148,18 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
             {
                 MemoryStream stream = new(audioData);
                 IAudioPlayer player = audioManager.CreatePlayer(stream);
-                activePlayers.Add(player);
+                lock (activePlayersLock)
+                {
+                    activePlayers.Add(player);
+                }
 
                 void OnPlaybackEnded(object? s, EventArgs e)
                 {
                     player.PlaybackEnded -= OnPlaybackEnded;
-                    activePlayers.Remove(player);
+                    lock (activePlayersLock)
+                    {
+                        activePlayers.Remove(player);
+                    }
                     player.Dispose();
                 }
 
@@ -258,21 +265,24 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
             return;
         }
 
-        foreach (IAudioPlayer player in activePlayers)
+        lock (activePlayersLock)
         {
-            try
+            foreach (IAudioPlayer player in activePlayers)
             {
-                player.Stop();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Failed to stop player: {ex.Message}");
+                try
+                {
+                    player.Stop();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to stop player: {ex.Message}");
+                }
+
+                player.Dispose();
             }
 
-            player.Dispose();
+            activePlayers.Clear();
         }
-
-        activePlayers.Clear();
         _ = hubConnection.DisposeAsync();
         disposed = true;
 
