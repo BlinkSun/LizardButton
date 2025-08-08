@@ -39,33 +39,39 @@
                 <RoundRectangle CornerRadius="70" />
             </Border.StrokeShape>
             <Border.Shadow>
-                <Shadow Brush="{AppThemeBinding Light={StaticResource BlackBrush}, Dark={StaticResource WhiteBrush}}"
+                <Shadow x:Name="ButtonShadow"
+                        Brush="{AppThemeBinding Light={StaticResource BlackBrush}, Dark={StaticResource WhiteBrush}}"
                         Opacity="0.5"
                         Radius="15"
                         Offset="0,10" />
             </Border.Shadow>
-            <ImageButton Padding="20"
-                         Aspect="Fill"
-                         BackgroundColor="Transparent"
-                         Clicked="OnCentralButtonClicked"
-                         Source="lizard.png">
-                <VisualStateManager.VisualStateGroups>
-                    <VisualStateGroupList>
-                        <VisualStateGroup x:Name="CommonStates">
-                            <VisualState x:Name="Normal">
-                                <VisualState.Setters>
-                                    <Setter Property="Scale" Value="1" />
-                                </VisualState.Setters>
-                            </VisualState>
-                            <VisualState x:Name="Pressed">
-                                <VisualState.Setters>
-                                    <Setter Property="Scale" Value="0.9" />
-                                </VisualState.Setters>
-                            </VisualState>
-                        </VisualStateGroup>
-                    </VisualStateGroupList>
-                </VisualStateManager.VisualStateGroups>
-            </ImageButton>
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="Scale" Value="1" />
+                                <Setter Property="TranslationY" Value="0" />
+                                <Setter TargetName="ButtonShadow" Property="Offset" Value="0,10" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="Scale" Value="0.95" />
+                                <Setter Property="TranslationY" Value="5" />
+                                <Setter TargetName="ButtonShadow" Property="Offset" Value="0,5" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </VisualStateManager.VisualStateGroups>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnCentralButtonClicked" />
+            </Border.GestureRecognizers>
+            <Image Padding="20"
+                   Aspect="Fill"
+                   BackgroundColor="Transparent"
+                   Source="lizard.png" />
         </Border>
         <admob:BannerAd Grid.Row="3"
                         AdSize="Banner"
