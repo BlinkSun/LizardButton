@@ -1,4 +1,5 @@
-﻿using Plugin.Maui.Audio;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using Plugin.Maui.Audio;
 using System.Globalization;
 using System.Numerics;
 
@@ -12,11 +13,22 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
     private readonly Func<Task> showAnimatedImage;
     private readonly IAudioManager audioManager;
     private readonly List<IAudioPlayer> activePlayers = [];
+    private readonly string labelWorldFormat;
     private readonly string labelFormat;
     private readonly string[] units;
+    private BigInteger tapWorldCount;
     private BigInteger tapCount;
     private byte[]? audioData;
     private bool disposed;
+
+    private const string HubUrl =
+#if DEBUG
+        "https://localhost:7296/hubs/tap";
+#else
+        "https://<YOUR-AZURE-APP-NAME>.azurewebsites.net/hubs/tap";
+#endif
+
+    private readonly HubConnection hubConnection;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainPageViewModel"/> class.
@@ -30,6 +42,11 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
         audioManager = AudioManager.Current;
 
         tapCount = BigInteger.Parse(Preferences.Default.Get(nameof(tapCount), "0"), CultureInfo.InvariantCulture);
+        labelWorldFormat = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
+        {
+            "fr" => "Nombre de lézards mondial: {0}",
+            _ => "Lizard World count: {0}",
+        };
         labelFormat = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName switch
         {
             "fr" => "Nombre de lézards : {0}",
@@ -45,6 +62,19 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
         OnPropertyChanged(nameof(CountText));
 
         _ = InitializeAudioAsync();
+
+        // Set up SignalR connection for global tap count
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(HubUrl)
+            .WithAutomaticReconnect()
+            .Build();
+
+        hubConnection.On<long>("ReceiveTapCount", count =>
+        {
+            MainThread.BeginInvokeOnMainThread(() => TapWorldCount = new BigInteger(count));
+        });
+
+        _ = ConnectToHubAsync();
     }
 
     /// <summary>
@@ -83,8 +113,8 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
                 void OnPlaybackEnded(object? s, EventArgs e)
                 {
                     player.PlaybackEnded -= OnPlaybackEnded;
-                    player.Dispose();
                     activePlayers.Remove(player);
+                    player.Dispose();
                 }
 
                 player.PlaybackEnded += OnPlaybackEnded;
@@ -92,6 +122,15 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
             }
 
             await showAnimatedImage.Invoke();
+
+            try
+            {
+                await hubConnection.InvokeAsync("IncrementTapCount");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"SignalR error sending tap: {ex.Message}");
+            }
         }
         catch (Exception ex)
         {
@@ -105,11 +144,23 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
     /// <summary>
     /// Gets the localized text displaying the tap count.
     /// </summary>
+    public string CountWorldText => string.Format(labelWorldFormat, FormatWithUnits(tapWorldCount));
     public string CountText => string.Format(labelFormat, FormatWithUnits(tapCount));
 
     /// <summary>
     /// Gets or sets the number of taps performed.
     /// </summary>
+    public BigInteger TapWorldCount
+    {
+        get => tapWorldCount;
+        private set
+        {
+            if (SetProperty(ref tapWorldCount, value))
+            {
+                OnPropertyChanged(nameof(CountWorldText));
+            }
+        }
+    }
     public BigInteger TapCount
     {
         get => tapCount;
@@ -183,8 +234,25 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
         }
 
         activePlayers.Clear();
+        _ = hubConnection.DisposeAsync();
         disposed = true;
 
         GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Connects to the SignalR hub and requests the current global tap count.
+    /// </summary>
+    private async Task ConnectToHubAsync()
+    {
+        try
+        {
+            await hubConnection.StartAsync();
+            await hubConnection.InvokeAsync("GetTapCount");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"SignalR connection error: {ex.Message}");
+        }
     }
 }

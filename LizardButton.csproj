@@ -10,8 +10,8 @@
         <Nullable>enable</Nullable>
         <ApplicationTitle>LizardButton</ApplicationTitle>
         <ApplicationId>com.blinksun.lizardbutton</ApplicationId>
-        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-        <ApplicationVersion>1</ApplicationVersion>
+        <ApplicationDisplayVersion>1.1</ApplicationDisplayVersion>
+        <ApplicationVersion>2</ApplicationVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
@@ -20,31 +20,36 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
         <AndroidSigningKeyStore>blinkey.jks</AndroidSigningKeyStore>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|net8.0-android'">
-      <AndroidSigningKeyStore>blinkey.jks</AndroidSigningKeyStore>
+  
+    <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-android'">
       <AndroidSigningStorePass>blinky</AndroidSigningStorePass>
       <AndroidSigningKeyAlias>blinkey</AndroidSigningKeyAlias>
       <AndroidSigningKeyPass>blinky</AndroidSigningKeyPass>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android|AnyCPU'">
       <AndroidKeyStore>True</AndroidKeyStore>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
-      <AndroidKeyStore>True</AndroidKeyStore>
-    </PropertyGroup>
+  
     <ItemGroup>
       <MauiFont Include="Resources\Fonts\*" />
       <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+      <AndroidResource Remove="LizardButton.Api\**" />
+      <Compile Remove="LizardButton.Api\**" />
+      <EmbeddedResource Remove="LizardButton.Api\**" />
+      <MauiCss Remove="LizardButton.Api\**" />
+      <MauiXaml Remove="LizardButton.Api\**" />
+      <None Remove="LizardButton.Api\**" />
       <MauiAsset Include="Resources\Sounds\lizard.mp3" LogicalName="lizard.mp3" />
       <MauiIcon Include="Resources\Images\appicon.png" Color="#512BD4" />
       <MauiImage Include="Resources\Images\lizard.png" LogicalName="lizard.png" />
       <MauiSplashScreen Include="Resources\Images\splash.png" Color="#512BD4" BaseSize="300,300" />
     </ItemGroup>
+  
     <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
         <PackageReference Include="Plugin.AdMob" Version="2.3.1" />
         <PackageReference Include="Plugin.Maui.Audio" Version="3.1.1" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.*" />
     </ItemGroup>
+  
 </Project>

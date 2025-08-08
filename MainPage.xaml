@@ -8,19 +8,26 @@
     <Grid x:Name="RootGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Label Grid.Row="0"
                Margin="0,20,0,10"
+               FontSize="14"
+               HorizontalOptions="Center"
+               Text="{Binding CountWorldText}"
+               VerticalOptions="Center" />
+        <Label Grid.Row="1"
+               Margin="0,0,0,10"
                FontSize="18"
                HorizontalOptions="Center"
                Text="{Binding CountText}"
                VerticalOptions="Center" />
         <AbsoluteLayout x:Name="AnimationArea"
-                        Grid.Row="1"
+                        Grid.RowSpan="4"
                         BackgroundColor="Transparent" />
-        <Border Grid.Row="1"
+        <Border Grid.Row="2"
                 Background="{AppThemeBinding Light={StaticResource MainButtonGradientLight}, Dark={StaticResource MainButtonGradientDark}}"
                 HeightRequest="140"
                 HorizontalOptions="Center"
@@ -38,7 +45,7 @@
                         Offset="0,10" />
             </Border.Shadow>
             <ImageButton Padding="20"
-                         Aspect="AspectFill"
+                         Aspect="Fill"
                          BackgroundColor="Transparent"
                          Clicked="OnCentralButtonClicked"
                          Source="lizard.png">
@@ -60,7 +67,7 @@
                 </VisualStateManager.VisualStateGroups>
             </ImageButton>
         </Border>
-        <admob:BannerAd Grid.Row="2"
+        <admob:BannerAd Grid.Row="3"
                         AdSize="Banner"
                         AdUnitId="ca-app-pub-3940256099942544/6300978111"
                         HeightRequest="50"

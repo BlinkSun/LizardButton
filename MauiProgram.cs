@@ -8,7 +8,6 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         AdConfig.UseTestAdUnitIds = true;
-
         MauiAppBuilder builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
