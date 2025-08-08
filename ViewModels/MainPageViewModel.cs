@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Maui.Networking;
 using Plugin.Maui.Audio;
 using System.Globalization;
 using System.Net.Http.Json;
@@ -36,6 +37,7 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
     private readonly HubConnection hubConnection;
     private readonly HttpClient httpClient = new();
     private string? jwt;
+    private bool reconnecting;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainPageViewModel"/> class.
@@ -94,6 +96,9 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
                 // handle UI update error
             }
         });
+
+        hubConnection.Closed += async _ => await ReconnectWithRetryAsync();
+        Connectivity.Current.ConnectivityChanged += OnConnectivityChanged;
 
         _ = ConnectToHubAsync();
     }
@@ -179,6 +184,26 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
 
             await showAnimatedImage.Invoke();
 
+            _ = SendTapAsync();
+        }
+        catch (Exception ex)
+        {
+            if (Application.Current?.MainPage != null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+            }
+        }
+    }
+
+    private async Task SendTapAsync()
+    {
+        if (hubConnection.State != HubConnectionState.Connected)
+        {
+            await ReconnectWithRetryAsync();
+        }
+
+        if (hubConnection.State == HubConnectionState.Connected)
+        {
             try
             {
                 await hubConnection.InvokeAsync("IncrementTapCount");
@@ -186,13 +211,7 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"SignalR error sending tap: {ex.Message}");
-            }
-        }
-        catch (Exception ex)
-        {
-            if (Application.Current?.MainPage != null)
-            {
-                await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+                _ = ReconnectWithRetryAsync();
             }
         }
     }
@@ -294,6 +313,7 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
             activePlayers.Clear();
         }
         _ = hubConnection.DisposeAsync();
+        Connectivity.Current.ConnectivityChanged -= OnConnectivityChanged;
         disposed = true;
 
         GC.SuppressFinalize(this);
@@ -313,6 +333,40 @@ public partial class MainPageViewModel : BaseViewModel, IDisposable
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"SignalR connection error: {ex.Message}");
+        }
+    }
+
+    private async void OnConnectivityChanged(object? sender, ConnectivityChangedEventArgs e)
+    {
+        if (e.NetworkAccess == NetworkAccess.Internet)
+        {
+            await ReconnectWithRetryAsync();
+        }
+    }
+
+    private async Task ReconnectWithRetryAsync()
+    {
+        if (reconnecting)
+        {
+            return;
+        }
+
+        reconnecting = true;
+        try
+        {
+            while (hubConnection.State != HubConnectionState.Connected &&
+                   Connectivity.Current.NetworkAccess == NetworkAccess.Internet)
+            {
+                await ConnectToHubAsync();
+                if (hubConnection.State != HubConnectionState.Connected)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(5));
+                }
+            }
+        }
+        finally
+        {
+            reconnecting = false;
         }
     }
 
